@@ -1,4 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
+import Button from './components/Button';
+import User from './components/User';
+
+//퀴즈: age가 25세 이상인 user는 제외하고 렌더링 해보세요
 
 const App = () => {
   const style = {
@@ -8,66 +12,95 @@ const App = () => {
   };
 
   // const vegetables = ['감자', '고구마', '오이', '가지', '옥수수'];
-  const users = [
+
+  const [users, setUsers] = useState([
     {
-      id: 1,
+      id: new Date().getTime(),
       age: 30,
       name: '송중기',
     },
     {
-      id: 2,
+      id: new Date().getTime() + 1,
       age: 24,
       name: '송강',
     },
     {
-      id: 3,
+      id: new Date().getTime() + 2,
       age: 21,
       name: '김유정',
     },
     {
-      id: 4,
+      id: new Date().getTime() + 3,
       age: 29,
       name: '구교환',
     },
-  ];
+  ]);
+
+  const [age, setAge] = useState(0);
+  const [name, setName] = useState('');
+
+  const addUserHandeler = () => {
+    const newUser = {
+      id: new Date().getTime(),
+      age: Number(age),
+      name: name,
+    };
+    setUsers([...users, newUser]);
+  };
+
+  // 삭제
+  const deleteUserHandeler = (id) => {
+    // 삭제할 대상 id
+
+    const deletedUsers = users.filter(function (user) {
+      return user.id != id;
+    });
+    setUsers(deletedUsers);
+  };
 
   return (
-    <div style={style}>
-      {/* <div style={squareStyle}>감자</div>
-        <div style={squareStyle}>고구마</div>
-        <div style={squareStyle}>오이</div>
-        <div style={squareStyle}>가지</div>
-        <div style={squareStyle}>옥수수</div> */}
-      {users.map(function (user) {
-        return (
-          // <div key={user.id} style={squareStyle}>
-          //   {user.name}
-          // </div>
-          <User key={user.id} user={user} />
-        );
-      })}
-    </div>
+    <>
+      <input
+        type="number"
+        value={age}
+        onChange={(e) => {
+          setAge(e.target.value);
+        }}
+      />
+      <input
+        type="text"
+        value={name}
+        onChange={(e) => {
+          setName(e.target.value);
+        }}
+      />
+      <Button color="green" onClick={addUserHandeler}>
+        추가
+      </Button>
+      {/* 유저 컴포넌트를 반복적으로 렌더링하는 부분 */}
+      {/* 그냥 렌더링하는게 아니라 필터링을 걸고 돌려줘야함 */}
+      {/* users가 배열이기 때문에 filter를 걸수있음 */}
+      {/* filter의 역할: 새로운 배열을 return */}
+      <div style={style}>
+        {users
+          // .filter(function (u) {
+          //   return u.age < 25;
+          // })
+          .map(function (user) {
+            if (user.age >= 25) {
+              return null;
+            }
+
+            return (
+              // <div key={user.id} style={squareStyle}>
+              //   {user.name}
+              // </div>
+              <User key={user.id} user={user} deleteUserHandeler={deleteUserHandeler} />
+            );
+          })}
+      </div>
+    </>
   );
 };
 
 export default App;
-
-const User = ({ user }) => {
-  const squareStyle = {
-    width: '100px',
-    height: '100px',
-    border: '1px solid green',
-    borderRadius: '10px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  };
-
-  const { age, name } = user;
-
-  return (
-    <div style={squareStyle}>
-      {age}살 - {name}
-    </div>
-  );
-};
